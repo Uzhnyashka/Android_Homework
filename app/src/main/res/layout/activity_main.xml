@@ -24,14 +24,14 @@
             android:layout_width="40sp"
             android:layout_height="40sp"
             android:layout_margin="15sp"
-            android:background="@drawable/zoom_out"
+            android:background="@drawable/zoom_out_pressed"
             android:id="@+id/btn_ZoomOut" />
 
         <Button
             android:layout_width="40sp"
             android:layout_height="40sp"
             android:layout_margin="15sp"
-            android:background="@drawable/zoom_in"
+            android:background="@drawable/zoom_in_pressed"
             android:id="@+id/btn_ZoomIn" />
     </LinearLayout>
 
