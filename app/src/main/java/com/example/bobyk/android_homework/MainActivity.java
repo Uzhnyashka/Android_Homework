@@ -46,6 +46,7 @@ public class MainActivity extends ActionBarActivity
     SharedPreferences sp;
     private LocationManager mLocationManager;
     private LatLng mLocationPosition = null;
+    public List<Address> ad;
 
     public ArrayList<LatLng> markers, mark;
     boolean start = false;
@@ -77,8 +78,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onStart() {
         start = true;
-        mLocationManager.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER, 0, 0, this);
+        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
         super.onStart();
     }
 
@@ -87,6 +87,58 @@ public class MainActivity extends ActionBarActivity
         super.onStop();
         mLocationManager.removeUpdates(this);
         setMarkers();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.markers_del:
+                deleteMarkers();
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mGoogleMap = googleMap;
+        mGoogleMap.setMyLocationEnabled(true);
+        mGoogleMap.setOnMapLongClickListener(this);
+        if (start){
+            findViews();
+            getMarkers();
+            start = false;
+        }
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btn_ZoomIn:
+                mGoogleMap.animateCamera(CameraUpdateFactory.zoomIn());
+                break;
+
+            case R.id.btn_ZoomOut:
+                mGoogleMap.animateCamera(CameraUpdateFactory.zoomOut());
+                break;
+
+            case R.id.btn_Location:
+                if (mLocationPosition != null) getInfoCurrentLocation();
+                break;
+
+            }
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        putMarker(latLng);
     }
 
     private void setMarkers(){
@@ -111,34 +163,6 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mGoogleMap = googleMap;
-        mGoogleMap.setMyLocationEnabled(true);
-        mGoogleMap.setOnMapLongClickListener(this);
-        if (start){
-            findViews();
-            getMarkers();
-            start = false;
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.markers_del:
-                deleteMarkers();
-                break;
-        }
-        return true;
-    }
-
     public void deleteMarkers(){
         markers.clear();
         mark.clear();
@@ -149,25 +173,7 @@ public class MainActivity extends ActionBarActivity
         mGoogleMap.clear();
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.btn_ZoomIn:
-                mGoogleMap.animateCamera(CameraUpdateFactory.zoomIn());
-            break;
 
-            case R.id.btn_ZoomOut:
-                mGoogleMap.animateCamera(CameraUpdateFactory.zoomOut());
-            break;
-
-            case R.id.btn_Location:
-                if (mLocationPosition != null) getInfoCurrentLocation();
-            break;
-
-        }
-    }
-
-    public List<Address> ad;
 
     public void getInfoCurrentLocation(){
         final Dialog dialog = new Dialog(this, R.style.cust_dialog);
@@ -197,10 +203,7 @@ public class MainActivity extends ActionBarActivity
     }
 
 
-    @Override
-    public void onMapLongClick(LatLng latLng) {
-        putMarker(latLng);
-    }
+
 
     private void putMarker(LatLng latLng){
         mGoogleMap.addMarker(new MarkerOptions()
